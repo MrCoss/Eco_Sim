@@ -48,7 +48,7 @@ const ThemeToggle = ({ theme, setTheme }) => (
 );
 
 const EcoSimLogo = () => (
-    <div className="w-80 h-80 mx-auto">
+    <div className="w-24 h-24 mx-auto">
         <img src="/logo.png" alt="EcoSim Logo" className="w-full h-full object-contain" />
     </div>
 );
@@ -80,14 +80,14 @@ const FeatureInput = React.memo(({ label, name, value, onChange, helpText, delay
 
 const PredictionCard = ({ prediction, isLoading, onShowMap, mapVisible, mapDataLoaded }) => {
     const coverTypeDetails = useMemo(() => ({
-        'Spruce/Fir': { icon: '🌲', classification: { Genus: 'Picea, Abies' }, summary: 'Common in cold, high-elevation subalpine forests.', imageUrl: '/images/spruce-fir.jpg', youtubeUrl: 'https://youtu.be/TLZ2BhcdLt0?si=UH9I1_MXF54Blul0' },
-        'Lodgepole Pine': { icon: '🌲', classification: { Genus: 'Pinus' }, summary: 'A pioneer species that thrives after forest fires.', imageUrl: '/images/lodgepole-pine.jpg', youtubeUrl: 'https://youtu.be/4llhmaLvKXA?si=JKPwIcB3hZBbFrGM' },
-        'Ponderosa Pine': { icon: '🌲', classification: { Genus: 'Pinus' }, summary: 'Identifiable by its tall, straight trunk and cinnamon-colored bark.', imageUrl: '/images/ponderosa-pine.jpg', youtubeUrl: 'https://youtu.be/tjMt2EV9wNU?si=V7_3qlj1FcpY53gk' },
-        'Cottonwood/Willow': { icon: '🌳', classification: { Genus: 'Populus, Salix' }, summary: 'Found in riparian zones along rivers and streams.', imageUrl: '/images/cottonwood-willow.jpg', youtubeUrl: 'https://youtu.be/buJ1wm73OIw?si=dlwHlyv14adqJLx6' },
-        'Aspen': { icon: '🌳', classification: { Genus: 'Populus' }, summary: 'Known for their stunning golden fall foliage.', imageUrl: '/images/aspen.jpg', youtubeUrl: 'https://youtu.be/JYVixAMIIxI?si=bteVIWq30Kj1wbsT' },
-        'Douglas-fir': { icon: '🌲', classification: { Genus: 'Pseudotsuga' }, summary: 'A key species in the Pacific Northwest, not a true fir.', imageUrl: '/images/douglas-fir.jpg', youtubeUrl: 'https://youtu.be/oOhMd2B_inw?si=IVqHNYpV-ae-Te_5' },
-        'Krummholz': { icon: '🌳', classification: { Genus: 'N/A' }, summary: 'Stunted, gnarled trees growing at the harsh treeline.', imageUrl: '/images/krummholz.jpg', youtubeUrl: 'https://youtu.be/eePaiGZRqTg?si=ahpMg-c-3yXZQyk9' },
-        'Default': { icon: '❓', classification: { Genus: '?' }, summary: 'Input variables to predict the forest cover type.', imageUrl: '/images/default-forest.jpg' }
+        'Spruce/Fir': { icon: '🌲', classification: { Genus: 'Picea, Abies' }, summary: 'Common in cold, high-elevation subalpine forests. These evergreen conifers are crucial for watershed protection and provide critical habitat for species like the lynx, marten, and various bird species.', imageUrl: '/images/spruce-fir.jpg', youtubeUrl: 'https://youtu.be/TLZ2BhcdLt0?si=UH9I1_MXF54Blul0' },
+        'Lodgepole Pine': { icon: '🌲', classification: { Genus: 'Pinus' }, summary: 'A resilient pioneer species that thrives in the aftermath of forest fires, which heat its cones to release seeds. It is a vital source of timber and provides essential habitat and food for elk and deer.', imageUrl: '/images/lodgepole-pine.jpg', youtubeUrl: 'https://youtu.be/4llhmaLvKXA?si=JKPwIcB3hZBbFrGM' },
+        'Ponderosa Pine': { icon: '🌲', classification: { Genus: 'Pinus' }, summary: 'Identifiable by its tall, straight trunk and distinctive cinnamon-colored bark that often smells like vanilla or butterscotch. It dominates drier, sunnier mountain slopes and is adapted to frequent, low-intensity fires.', imageUrl: '/images/ponderosa-pine.jpg', youtubeUrl: 'https://youtu.be/tjMt2EV9wNU?si=V7_3qlj1FcpY53gk' },
+        'Cottonwood/Willow': { icon: '🌳', classification: { Genus: 'Populus, Salix' }, summary: 'Found in riparian zones along rivers and streams. These deciduous trees are essential for maintaining bank stability, preventing erosion, and supporting a high diversity of bird and insect species.', imageUrl: '/images/cottonwood-willow.jpg', youtubeUrl: 'https://youtu.be/buJ1wm73OIw?si=dlwHlyv14adqJLx6' },
+        'Aspen': { icon: '🌳', classification: { Genus: 'Populus' }, summary: 'Famous for their stunning golden fall foliage and smooth, white bark. Aspen groves are often single, massive organisms connected by a shared root system, making them one of the largest living things on Earth.', imageUrl: '/images/aspen.jpg', youtubeUrl: 'https://youtu.be/JYVixAMIIxI?si=bteVIWq30Kj1wbsT' },
+        'Douglas-fir': { icon: '�', classification: { Genus: 'Pseudotsuga' }, summary: 'A cornerstone species of Pacific Northwest forests. Despite its name, it is not a true fir. Its unique cones have distinctive three-pointed bracts that stick out from the scales, resembling the back half of a mouse.', imageUrl: '/images/douglas-fir.jpg', youtubeUrl: 'https://youtu.be/oOhMd2B_inw?si=IVqHNYpV-ae-Te_5' },
+        'Krummholz': { icon: '🌳', classification: { Genus: 'N/A' }, summary: 'A German word for "crooked wood," this term describes the stunted, gnarled trees that grow at the harsh, windy treeline of high mountains. Their twisted forms are a testament to their struggle for survival in extreme conditions.', imageUrl: '/images/krummholz.jpg', youtubeUrl: 'https://youtu.be/eePaiGZRqTg?si=ahpMg-c-3yXZQyk9' },
+        'Default': { icon: '❓', classification: { Genus: '?' }, summary: 'Input the cartographic variables on the right to predict the most likely forest cover type for that area.', imageUrl: '/images/default-forest.jpg' }
     }), []);
     const details = coverTypeDetails[prediction] || coverTypeDetails['Default'];
 
@@ -223,7 +223,8 @@ export default function App() {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
@@ -233,7 +234,7 @@ export default function App() {
 
         } catch (err) {
             console.error("API Error:", err);
-            setError('Failed to connect to the prediction server. Please try again later.');
+            setError(err.message || 'Failed to connect to the prediction server. Please try again later.');
         } finally {
             setIsLoading(false);
         }
