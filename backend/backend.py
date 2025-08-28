@@ -2,11 +2,11 @@
 
 import joblib
 import numpy as np
-import os # <-- IMPORT THE OS MODULE
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field # <-- FIX: Corrected typo from "pantic" to "pydantic"
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 # --- 1. SETUP ---
 app = FastAPI(
@@ -16,7 +16,7 @@ app = FastAPI(
 )
 
 # --- CORS Configuration ---
-origins = ["*"] # Allow all origins for now
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,8 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- FIX: Build absolute paths to model files ---
-# This makes sure the script can find the files in any environment.
+# --- Build absolute paths to model files ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, 'project_outputs', 'forest_cover', 'models', 'model_xgb.joblib')
 SCALER_PATH = os.path.join(BASE_DIR, 'project_outputs', 'forest_cover', 'models', 'scaler.joblib')
@@ -54,15 +53,50 @@ class ForestData(BaseModel):
     Hillshade_Noon: int = Field(..., example=232)
     Hillshade_3pm: int = Field(..., example=148)
     Horizontal_Distance_To_Fire_Points: int = Field(..., example=6279)
-    # One-hot encoded soil types
-    Soil_Type1: int = Field(0, example=0)
-    Soil_Type2: int = Field(0, example=0)
-    Soil_Type10: int = Field(0, example=1)
-    Soil_Type22: int = Field(0, example=0)
-    Soil_Type23: int = Field(0, example=0)
-    Soil_Type29: int = Field(0, example=0)
-    Soil_Type32: int = Field(0, example=0)
-    Soil_Type38: int = Field(0, example=0)
+    
+    # --- FIX: Make all soil types optional to prevent validation errors ---
+    # The frontend only sends the selected soil type, so the others will be missing.
+    # We will handle the one-hot encoding logic inside the endpoint.
+    Soil_Type1: Optional[int] = 0
+    Soil_Type2: Optional[int] = 0
+    Soil_Type3: Optional[int] = 0
+    Soil_Type4: Optional[int] = 0
+    Soil_Type5: Optional[int] = 0
+    Soil_Type6: Optional[int] = 0
+    Soil_Type7: Optional[int] = 0
+    Soil_Type8: Optional[int] = 0
+    Soil_Type9: Optional[int] = 0
+    Soil_Type10: Optional[int] = 0
+    Soil_Type11: Optional[int] = 0
+    Soil_Type12: Optional[int] = 0
+    Soil_Type13: Optional[int] = 0
+    Soil_Type14: Optional[int] = 0
+    Soil_Type15: Optional[int] = 0
+    Soil_Type16: Optional[int] = 0
+    Soil_Type17: Optional[int] = 0
+    Soil_Type18: Optional[int] = 0
+    Soil_Type19: Optional[int] = 0
+    Soil_Type20: Optional[int] = 0
+    Soil_Type21: Optional[int] = 0
+    Soil_Type22: Optional[int] = 0
+    Soil_Type23: Optional[int] = 0
+    Soil_Type24: Optional[int] = 0
+    Soil_Type25: Optional[int] = 0
+    Soil_Type26: Optional[int] = 0
+    Soil_Type27: Optional[int] = 0
+    Soil_Type28: Optional[int] = 0
+    Soil_Type29: Optional[int] = 0
+    Soil_Type30: Optional[int] = 0
+    Soil_Type31: Optional[int] = 0
+    Soil_Type32: Optional[int] = 0
+    Soil_Type33: Optional[int] = 0
+    Soil_Type34: Optional[int] = 0
+    Soil_Type35: Optional[int] = 0
+    Soil_Type36: Optional[int] = 0
+    Soil_Type37: Optional[int] = 0
+    Soil_Type38: Optional[int] = 0
+    Soil_Type39: Optional[int] = 0
+    Soil_Type40: Optional[int] = 0
 
 # --- Prediction Response Model ---
 class PredictionResponse(BaseModel):
@@ -84,15 +118,30 @@ def predict_forest_cover(data: ForestData):
         raise HTTPException(status_code=500, detail="Model or scaler not loaded.")
 
     try:
-        features = np.array([
-            data.Elevation, data.Aspect, data.Slope,
-            data.Horizontal_Distance_To_Hydrology, data.Vertical_Distance_To_Hydrology,
-            data.Horizontal_Distance_To_Roadways, data.Hillshade_9am,
-            data.Hillshade_Noon, data.Hillshade_3pm,
-            data.Horizontal_Distance_To_Fire_Points,
-            data.Soil_Type1, data.Soil_Type2, data.Soil_Type10, data.Soil_Type22,
-            data.Soil_Type23, data.Soil_Type29, data.Soil_Type32, data.Soil_Type38
-        ]).reshape(1, -1)
+        # Convert the Pydantic model to a dictionary to work with it
+        data_dict = data.dict()
+        
+        # Create a list of features in the exact order the model expects
+        feature_list = [
+            data_dict.get('Elevation'),
+            data_dict.get('Aspect'),
+            data_dict.get('Slope'),
+            data_dict.get('Horizontal_Distance_To_Hydrology'),
+            data_dict.get('Vertical_Distance_To_Hydrology'),
+            data_dict.get('Horizontal_Distance_To_Roadways'),
+            data_dict.get('Hillshade_9am'),
+            data_dict.get('Hillshade_Noon'),
+            data_dict.get('Hillshade_3pm'),
+            data_dict.get('Horizontal_Distance_To_Fire_Points'),
+        ]
+        
+        # Add all 40 soil types, ensuring they are in the correct order
+        for i in range(1, 41):
+            feature_list.append(data_dict.get(f'Soil_Type{i}', 0))
+
+        features = np.array(feature_list).reshape(1, -1)
+        
+        print(f"Shape of features array for prediction: {features.shape}")
 
         scaled_features = scaler.transform(features)
         prediction_index = model.predict(scaled_features)[0]
@@ -112,5 +161,5 @@ def predict_forest_cover(data: ForestData):
         return {"prediction": prediction_name, "probabilities": probabilities_list}
 
     except Exception as e:
+        print(f"🔴 PREDICTION ERROR: {str(e)}")
         raise HTTPException(status_code=500, detail=f"An error occurred during prediction: {str(e)}")
-        
