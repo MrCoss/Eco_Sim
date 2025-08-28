@@ -48,7 +48,7 @@ const ThemeToggle = ({ theme, setTheme }) => (
 );
 
 const EcoSimLogo = () => (
-    <div className="w-24 h-24 mx-auto">
+    <div className="w-80 h-80 mx-auto">
         <img src="/logo.png" alt="EcoSim Logo" className="w-full h-full object-contain" />
     </div>
 );
