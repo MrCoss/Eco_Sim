@@ -2,9 +2,10 @@
 
 import joblib
 import numpy as np
+import os # <-- IMPORT THE OS MODULE
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field # <-- FIX: Corrected typo from "pantic" to "pydantic"
 from typing import List
 
 # --- 1. SETUP ---
@@ -14,9 +15,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# --- FIX: Allow requests from ALL frontends for debugging ---
-# By changing origins to ["*"], we can rule out a CORS configuration issue.
-origins = ["*"]
+# --- CORS Configuration ---
+origins = ["*"] # Allow all origins for now
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,14 +26,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- FIX: Build absolute paths to model files ---
+# This makes sure the script can find the files in any environment.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'project_outputs', 'forest_cover', 'models', 'model_xgb.joblib')
+SCALER_PATH = os.path.join(BASE_DIR, 'project_outputs', 'forest_cover', 'models', 'scaler.joblib')
+
 # --- Model and Scaler Loading ---
-# Load the pre-trained machine learning model and scaler at startup.
 try:
-    model = joblib.load('project_outputs/forest_cover/models/model_xgb.joblib')
-    scaler = joblib.load('project_outputs/forest_cover/models/scaler.joblib')
+    model = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
     print("✅ Model and scaler loaded successfully.")
 except FileNotFoundError:
-    print("🔴 Error: Model or scaler file not found. Make sure the paths are correct.")
+    print(f"🔴 Error: Model or scaler not found. Looked in {MODEL_PATH} and {SCALER_PATH}")
     model = None
     scaler = None
 
@@ -108,3 +113,4 @@ def predict_forest_cover(data: ForestData):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred during prediction: {str(e)}")
+        

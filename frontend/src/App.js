@@ -1,14 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 // --- Helper & Hook Imports ---
-// (These would be in separate files in a real project)
-
-/**
- * Custom hook for managing state with localStorage persistence.
- * @param {string} key The key to use for localStorage.
- * @param {*} initialValue The initial value if nothing is in localStorage.
- * @returns {[any, Function]} The state value and the setter function.
- */
 const useLocalStorage = (key, initialValue) => {
     const [storedValue, setStoredValue] = useState(() => {
         try {
@@ -32,10 +24,7 @@ const useLocalStorage = (key, initialValue) => {
     return [storedValue, setValue];
 };
 
-
 // --- UI Component Imports ---
-// (Each of these would be in its own file under a 'components' directory)
-
 const FallingLeaves = React.memo(() => (
     <div className="falling-leaves fixed top-0 left-0 w-full h-full pointer-events-none z-0">
         {[...Array(15)].map((_, i) => (
@@ -210,13 +199,22 @@ export default function App() {
         setError('');
 
         try {
-            const payload = { ...formData };
+            // --- FIX: Convert all form values to numbers before sending ---
+            const numericFormData = Object.fromEntries(
+                Object.entries(formData).map(([key, value]) => {
+                    if (key !== 'Soil_Type') {
+                        return [key, Number(value)];
+                    }
+                    return [key, value];
+                })
+            );
+
+            const payload = { ...numericFormData };
             Object.keys(soilTypes).forEach(key => {
                 payload[key] = (payload.Soil_Type === key) ? 1 : 0;
             });
             delete payload.Soil_Type;
 
-            // --- FIX: Correctly construct the API URL for both local and deployed environments ---
             const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
             const response = await fetch(`${baseUrl}/predict`, {
                 method: 'POST',
