@@ -1,0 +1,146 @@
+/*
+  Tailwind CSS Directives
+  These are essential for Tailwind to work its magic.
+*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Base Layer Customization
+  Here we define global styles, fonts, and colors for a consistent look.
+*/
+@layer base {
+  /* Apply dark mode styles when the html tag has the 'dark' class */
+  :root {
+    --background: #ffffff;
+    --foreground: #0f172a; /* slate-900 */
+  }
+
+  .dark {
+    --background: #0f172a; /* slate-900 */
+    --foreground: #f8fafc; /* slate-50 */
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Manrope', sans-serif;
+  }
+
+  /* Custom styling for the select dropdown options in dark mode */
+  select option {
+      @apply bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200;
+  }
+}
+
+/*
+  Custom Animations
+  These animations provide smooth and engaging transitions for the UI.
+*/
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-10vh) rotateZ(0deg);
+  }
+  100% {
+    opacity: 0.5;
+    transform: translateY(110vh) rotateZ(360deg);
+  }
+}
+
+@keyframes sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(80px); }
+}
+
+/*
+  Animation Utility Classes
+  Apply these classes directly to elements in your React components.
+*/
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* Shimmer effect for loading placeholders */
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #e2e8f0; /* gray-200 */
+}
+.dark .animate-shimmer {
+  background-color: #334155; /* gray-700 */
+}
+.animate-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 2s infinite;
+}
+.dark .animate-shimmer::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+}
+
+
+/*
+  Falling Leaves Background Effect
+  Styles for the decorative falling leaves animation.
+*/
+.falling-leaves {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf {
+  position: absolute;
+  top: -50px;
+  width: 20px;
+  height: 20px;
+  background-color: #4ade80; /* green-400 */
+  opacity: 0.7;
+  border-radius: 50% 0;
+  animation-name: fall, sway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: normal, alternate;
+}
+
+.leaf:nth-child(odd) {
+  background-color: #22c55e; /* green-500 */
+  width: 15px;
+  height: 15px;
+}

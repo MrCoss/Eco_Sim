@@ -1,21 +1,18 @@
-# Python
+# Python dependencies and caches
+/venv/
 __pycache__/
 *.pyc
-venv/
+
+# Node.js dependencies and build output
+/frontend/node_modules/
+/frontend/build/
+
+# Environment variables (NEVER commit these)
 .env
+.env.local
+.env.*.local
 
-# Node
-node_modules/
-build/
-.DS_Store
-
-# IDEs and Editors
-.vscode/
+# IDE and OS files
 .idea/
-
-# Logs
-logs/
-*.log
-
-# Data
-data/
+.vscode/
+*.DS_Store
