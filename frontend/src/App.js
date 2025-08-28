@@ -178,10 +178,8 @@ export default function App() {
     useEffect(() => {
         const fetchMapData = async () => {
             try {
-                // FIX: Use process.env.PUBLIC_URL to create a stable path to the asset
                 const response = await fetch(`${process.env.PUBLIC_URL}/train_clean.csv`);
                 const text = await response.text();
-                // Basic CSV parsing, a library like PapaParse is more robust
                 const rows = text.split('\n').slice(1);
                 const data = rows.map(row => {
                     const values = row.split(',');
@@ -192,7 +190,6 @@ export default function App() {
                     };
                 }).filter(d => !isNaN(d.Cover_Type));
                 
-                // Simple sampling
                 const sample = data.filter((_, i) => i % Math.floor(data.length / 2000) === 0);
                 setMapData(sample);
             } catch (err) {
@@ -214,14 +211,14 @@ export default function App() {
 
         try {
             const payload = { ...formData };
-            // One-hot encode soil type
             Object.keys(soilTypes).forEach(key => {
                 payload[key] = (payload.Soil_Type === key) ? 1 : 0;
             });
             delete payload.Soil_Type;
 
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/predict';
-            const response = await fetch(apiUrl, {
+            // --- FIX: Correctly construct the API URL for both local and deployed environments ---
+            const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+            const response = await fetch(`${baseUrl}/predict`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
