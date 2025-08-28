@@ -14,16 +14,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow requests from specific frontends (CORS)
-origins = [
-    "http://localhost:3000",      # Local React dev server
-    "http://localhost:5173",      # Local Vite dev server
-    "https://ecosim.onrender.com", # Deployed frontend
-]
+# --- FIX: Allow requests from ALL frontends for debugging ---
+# By changing origins to ["*"], we can rule out a CORS configuration issue.
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,    # or use ["*"] to allow all origins
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,7 +28,6 @@ app.add_middleware(
 
 # --- Model and Scaler Loading ---
 # Load the pre-trained machine learning model and scaler at startup.
-# This is more efficient than loading them for every request.
 try:
     model = joblib.load('project_outputs/forest_cover/models/model_xgb.joblib')
     scaler = joblib.load('project_outputs/forest_cover/models/scaler.joblib')
@@ -42,8 +38,6 @@ except FileNotFoundError:
     scaler = None
 
 # --- Data Validation Model (Pydantic) ---
-# This defines the exact structure and data types for the incoming request body.
-# It automatically validates the data and generates documentation.
 class ForestData(BaseModel):
     Elevation: int = Field(..., example=2596)
     Aspect: int = Field(..., example=51)
@@ -64,7 +58,6 @@ class ForestData(BaseModel):
     Soil_Type29: int = Field(0, example=0)
     Soil_Type32: int = Field(0, example=0)
     Soil_Type38: int = Field(0, example=0)
-    # Add all other soil types your model was trained on, defaulting to 0
 
 # --- Prediction Response Model ---
 class PredictionResponse(BaseModel):
@@ -86,53 +79,32 @@ def predict_forest_cover(data: ForestData):
         raise HTTPException(status_code=500, detail="Model or scaler not loaded.")
 
     try:
-        # Convert the input data into a numpy array in the correct order for the model.
-        # This order MUST match the order of features the model was trained on.
         features = np.array([
             data.Elevation, data.Aspect, data.Slope,
             data.Horizontal_Distance_To_Hydrology, data.Vertical_Distance_To_Hydrology,
             data.Horizontal_Distance_To_Roadways, data.Hillshade_9am,
             data.Hillshade_Noon, data.Hillshade_3pm,
             data.Horizontal_Distance_To_Fire_Points,
-            # Ensure all soil types are included in the correct order
             data.Soil_Type1, data.Soil_Type2, data.Soil_Type10, data.Soil_Type22,
             data.Soil_Type23, data.Soil_Type29, data.Soil_Type32, data.Soil_Type38
         ]).reshape(1, -1)
 
-        # Apply the same scaling that was used during training
         scaled_features = scaler.transform(features)
-
-        # Make the prediction and get probabilities
         prediction_index = model.predict(scaled_features)[0]
         prediction_probabilities = model.predict_proba(scaled_features)[0]
 
-        # Map the prediction index to the cover type name
         cover_type_mapping = {
-            1: 'Spruce/Fir',
-            2: 'Lodgepole Pine',
-            3: 'Ponderosa Pine',
-            4: 'Cottonwood/Willow',
-            5: 'Aspen',
-            6: 'Douglas-fir',
-            7: 'Krummholz'
+            1: 'Spruce/Fir', 2: 'Lodgepole Pine', 3: 'Ponderosa Pine',
+            4: 'Cottonwood/Willow', 5: 'Aspen', 6: 'Douglas-fir', 7: 'Krummholz'
         }
-        prediction_name = cover_type_mapping.get(prediction_index, "Unknown")
+        prediction_name = cover_type_mapping.get(int(prediction_index), "Unknown")
 
-        # Format probabilities for the response
         probabilities_list = [
-            {"type": cover_type_mapping[i+1], "probability": float(prob)}
+            {"type": cover_type_mapping.get(i + 1, "Unknown"), "probability": float(prob)}
             for i, prob in enumerate(prediction_probabilities)
         ]
 
-        return {
-            "prediction": prediction_name,
-            "probabilities": probabilities_list
-        }
+        return {"prediction": prediction_name, "probabilities": probabilities_list}
 
     except Exception as e:
-        # Catch any errors during the prediction process
         raise HTTPException(status_code=500, detail=f"An error occurred during prediction: {str(e)}")
-
-# --- To run this application ---
-# In your terminal, navigate to the 'backend' directory and run:
-# uvicorn backend:app --reload
