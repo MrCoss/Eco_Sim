@@ -43,6 +43,7 @@ except FileNotFoundError:
 
 # --- Data Validation Model (Pydantic) ---
 class ForestData(BaseModel):
+    # This class now includes ALL 54 features the model expects.
     Elevation: int = Field(..., example=2596)
     Aspect: int = Field(..., example=51)
     Slope: int = Field(..., example=3)
@@ -54,9 +55,13 @@ class ForestData(BaseModel):
     Hillshade_3pm: int = Field(..., example=148)
     Horizontal_Distance_To_Fire_Points: int = Field(..., example=6279)
     
-    # --- FIX: Make all soil types optional to prevent validation errors ---
-    # The frontend only sends the selected soil type, so the others will be missing.
-    # We will handle the one-hot encoding logic inside the endpoint.
+    # FIX: Added the four missing Wilderness_Area features
+    Wilderness_Area_1: Optional[int] = 0
+    Wilderness_Area_2: Optional[int] = 0
+    Wilderness_Area_3: Optional[int] = 0
+    Wilderness_Area_4: Optional[int] = 0
+    
+    # All 40 soil types
     Soil_Type1: Optional[int] = 0
     Soil_Type2: Optional[int] = 0
     Soil_Type3: Optional[int] = 0
@@ -118,24 +123,19 @@ def predict_forest_cover(data: ForestData):
         raise HTTPException(status_code=500, detail="Model or scaler not loaded.")
 
     try:
-        # Convert the Pydantic model to a dictionary to work with it
         data_dict = data.dict()
         
-        # Create a list of features in the exact order the model expects
+        # FIX: Create the feature list in the EXACT order the model was trained on.
         feature_list = [
-            data_dict.get('Elevation'),
-            data_dict.get('Aspect'),
-            data_dict.get('Slope'),
-            data_dict.get('Horizontal_Distance_To_Hydrology'),
-            data_dict.get('Vertical_Distance_To_Hydrology'),
-            data_dict.get('Horizontal_Distance_To_Roadways'),
-            data_dict.get('Hillshade_9am'),
-            data_dict.get('Hillshade_Noon'),
-            data_dict.get('Hillshade_3pm'),
+            data_dict.get('Elevation'), data_dict.get('Aspect'), data_dict.get('Slope'),
+            data_dict.get('Horizontal_Distance_To_Hydrology'), data_dict.get('Vertical_Distance_To_Hydrology'),
+            data_dict.get('Horizontal_Distance_To_Roadways'), data_dict.get('Hillshade_9am'),
+            data_dict.get('Hillshade_Noon'), data_dict.get('Hillshade_3pm'),
             data_dict.get('Horizontal_Distance_To_Fire_Points'),
+            data_dict.get('Wilderness_Area_1', 0), data_dict.get('Wilderness_Area_2', 0),
+            data_dict.get('Wilderness_Area_3', 0), data_dict.get('Wilderness_Area_4', 0)
         ]
         
-        # Add all 40 soil types, ensuring they are in the correct order
         for i in range(1, 41):
             feature_list.append(data_dict.get(f'Soil_Type{i}', 0))
 
