@@ -1,6 +1,8 @@
-# EcoSim: AI Forest Cover Type Predictor
+# EcoSim: 
 
-**Live Demo:** [**https://ecosim-frontend.onrender.com**](https://ecosim-frontend.onrender.com)
+https://github.com/user-attachments/assets/4cbe88d9-30ac-4055-9ffe-e6e4cd5f833d
+
+AI Forest Cover Type Predictor
 
 ## About The Project
 
