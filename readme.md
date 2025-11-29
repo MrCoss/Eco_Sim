@@ -1,83 +1,149 @@
-# EcoSim: 
+# EcoSim – AI Forest Cover Type Predictor
 
 https://github.com/user-attachments/assets/4cbe88d9-30ac-4055-9ffe-e6e4cd5f833d
 
-AI Forest Cover Type Predictor
+## Overview
 
-## About The Project
+EcoSim is an intelligent full-stack web application engineered to predict dominant forest cover types using advanced machine learning and geospatial cartographic features. Built with a high-accuracy XGBoost model and delivered via a modern React + FastAPI architecture, EcoSim showcases the integration of real-time AI inference with an interactive, production-ready user experience.
 
-EcoSim is an intelligent web application that peers into the future of our forests. It leverages a sophisticated XGBoost model to analyze geographic data and reveal the hidden patterns of the wild, predicting the dominant tree species for a given location based on cartographic variables.
+This system empowers environmental scientists, forestry departments, and ecological modelers to simulate forest composition under diverse geographical and environmental conditions, supporting data-driven conservation decisions.
 
-This project showcases a full-stack implementation, featuring a dynamic React frontend that communicates with a high-performance Python/FastAPI backend. It's designed to be a clean, professional, and comprehensive demonstration of data science and modern web development skills.
+---
 
 ## Key Features
 
-* **Real-time AI Predictions:** Utilizes a trained XGBoost Classifier to predict one of seven forest cover types with high accuracy.
-* **Interactive & Responsive UI:** A sleek, user-friendly form allows for the input of all required cartographic variables on any device.
-* **Dynamic Theming:** Features a light/dark mode toggle for user preference.
-* **Detailed Species Information:** Shows detailed classification, a summary, and a relevant image for each predicted species.
-* **Quick Selection:** Dropdown menus for Wilderness Area and Soil Type allow for rapid scenario testing.
-* **Expandable "About" Section:** A clean, collapsible section provides context about the project and the dataset used.
+* **Real-Time AI Predictions** powered by an XGBoost classifier trained on the Forest Cover Type dataset.
+* **Seven-class cover type classification** based on wilderness region, soil type, elevation, slope, and cartographic features.
+* **FastAPI-based inference engine** optimized for low-latency cloud deployment.
+* **Interactive Web UI** with responsive form controls for scenario testing.
+* **Adaptive Theme Support** (light / dark mode).
+* **Expandable Species Insights Section** including species summary & reference image.
+* **Intuitive dropdowns** for Wilderness Area and Soil Type.
+
+---
 
 ## Tech Stack
 
-* **Frontend:** React, Tailwind CSS
-* **Backend:** Python, FastAPI
-* **Machine Learning:** Scikit-learn, XGBoost, Joblib
-* **Deployment:** Render
+| Layer      | Technology                    |
+| ---------- | ----------------------------- |
+| Frontend   | React, Tailwind CSS           |
+| Backend    | Python, FastAPI               |
+| ML Engine  | XGBoost, Scikit-learn, Joblib |
+| Deployment | Render Cloud                  |
+
+---
 
 ## Project Structure
 
-The project is organized into a monorepo structure with distinct frontend and backend directories, making it scalable and easy to manage.
-
- ```
-├── backend/          # FastAPI API, ML model, and dependencies
-│   ├── project_outputs/
-│   ├── backend.py
+```
+EcoSim/
+├── backend/                 # FastAPI service + ML model
+│   ├── project_outputs/     # Trained models & artifacts
+│   ├── backend.py           # API entrypoint
 │   └── requirements.txt
-├── frontend/         # React application source
-│   ├── public/
+├── frontend/                # React client application
 │   ├── src/
+│   ├── public/
 │   └── package.json
 ├── .gitignore
 └── readme.md
- ```
+```
+
+---
 
 ## Local Setup & Installation
 
-### Prerequisites
+### **Prerequisites**
 
 * Node.js v16+ and npm
-* Python v3.9+ and pip
+* Python 3.9+ and pip
 
-### Backend Setup
+### **Backend Installation**
 
-1.  **Navigate to the backend directory:**
-    ```
-    cd backend
-    ```
-2.  **Create and activate a virtual environment (Recommended):**
-    ```
-    # Create the environment
-    python -m venv venv
+```bash
+cd backend
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn backend:app --reload
+```
 
-    # Activate it (Windows)
-    .\venv\Scripts\activate
+Back-end available at: **[http://localhost:8000](http://localhost:8000)**
 
-    # Activate it (macOS/Linux)
-    source venv/bin/activate
-    ```
-3.  **Install the required Python packages:**
-    ```
-    pip install -r requirements.txt
-    ```
-4.  **Run the FastAPI server:**
-    ```
-    uvicorn backend:app --reload
-    ```
-    The backend API will now be running at `http://localhost:8000`.
+### **Frontend Installation**
 
-### Frontend Setup
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Front-end available at: **[http://localhost:3000](http://localhost:3000)**
+
+### **Run both services concurrently**
+
+Open two terminals — run backend in one, frontend in another.
+
+---
+
+## Dataset Source
+
+This project is built on the **UCI Forest Cover Type dataset**, containing cartographic variables describing U.S. forested regions:
+
+* Elevation, Aspect, Slope
+* Horizontal & Vertical distances to hydrology, fire points, and roadways
+* Wilderness Area (4 regions)
+* Soil Types (40 classes)
+* 7 cover type classes representing dominant species
+
+---
+
+## Model Performance
+
+| Metric          | Result                                           |
+| --------------- | ------------------------------------------------ |
+| Accuracy        | High performance prediction accuracy via XGBoost |
+| Inference speed | Real-time (<100ms avg)                           |
+| Output classes  | Seven forest cover species                       |
+
+---
+
+## Deployment Strategy
+
+* Backend deployed via **Render API hosting**
+* Frontend deployed as **React static site build**
+* Model packaged via **Joblib** for lightweight inference
+
+---
+
+## Future Enhancements
+
+* SHAP-based explainability for transparency
+* Multi-feature sensitivity visualization
+* Geospatial map heat-mapping for predictions
+* Continuous training pipeline with updated datasets
+
+---
+
+## Media & Demo
+
+Demo video: *Untitled.video.-.Made.with.Clipchamp.1.1.mp4* (Overview walkthrough of UI and features)
+
+---
+
+## Author
+
+**Costas Pinto**
+AI Engineer & Full-Stack Developer
+
+---
+
+## License
+
+MIT License — Free to use with attribution.
 
 1.  **Navigate to the frontend directory in a new terminal:**
     ```
