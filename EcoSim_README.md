@@ -7,7 +7,10 @@ EcoSim is a full-stack machine-learning application for predicting dominant fore
 The application combines an **XGBoost classification model** with a **FastAPI inference backend** and a **React + Tailwind CSS frontend**. It provides an interactive interface for testing forest-cover scenarios using geographical and environmental inputs.
 
 The project demonstrates an end-to-end workflow covering machine-learning inference, API development, frontend engineering, model packaging, and cloud deployment.
+https://github.com/user-attachments/assets/4cbe88d9-30ac-4055-9ffe-e6e4cd5f833d
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/5decae8d-3919-47cf-be7e-e739ed7e1139" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/4818a349-57e1-4a75-8f2d-e10136237199" />
 ---
 
 ## Table of Contents
